@@ -96,11 +96,11 @@ async function run(file, inFunc, outFunc, codeError) {
             if(variable.length == 0) {
                 codeError("A variable is required for pushing.", pc)
             } else stack.push(parse(variable));
-            // console.log("Pushed", stack);
+            //console.log("Pushed", stack);
         } else if (line[0] == "`") {
             let e = stack.pop();
             shift(e ?? 0);
-            // console.log("Popped", e, stack);
+            //console.log("Popped", e, stack);
         } else if (line[0] == ":") {
             if (variables[0] === 0) pc++;            
         } else if (line[0] == "|") {
@@ -114,10 +114,16 @@ async function run(file, inFunc, outFunc, codeError) {
             //console.log(labels[lbl]);
 
             pc = labels[lbl];
+        } else if (line.trim().slice(0, 5) == "debug") {
+            console.log(stack, variables);
         }
+
+        // console.log(line.trim().slice(0, 5));
 
         variables = variables.map(roll);
         stack = stack.map(roll);
+
+        //console.log(variables);
 
     }
 }

@@ -5,19 +5,27 @@ $
 // !
 // this_is_a_long_var_just_to_waste_your_time_haha_pneumonoultramicroscopicsilicovolcanoconiosis_😀_hippopotomonstrosesquippedaliophobia_AHHHHHH!__antidisestablishmentarianism_if_you_are_using_this_variable_then_you_are_out_of_options_and_you_have_no_life_because_you_are_coding_in_this_language_and_this_var_was_a_last_resort__why_am_i_following_you?
 
-Stack:
-Push: ~ <var>
-Pop: ` (shift into $)
 
-Branching
-<var> [>/<] <var> and set $ to zero if it is true
+=7
+[7, 0, 0, 0]
+
+=8
+[8, 7, 0, 0]
+ $  %  ^  @
+
+= %
+[7, 8, 7, 0]
+
+Stack:
+Push: ~ <var|const>
+Pop: ` (shift into $)
 
 Skip next line if $ == 0: :
 
 =<expr>
 =7
 
-Print: .
+Print: . <var|const>
 Read byte: ,
 
 &: Nand
