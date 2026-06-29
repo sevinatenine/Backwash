@@ -125,21 +125,30 @@ if (data.in) {
         fatal("Failed to open input file.");
     }
 }
-
 function inFunc() {
     const buf = Buffer.alloc(1);
-    const bytes = fs.readSync(inFd, buf, 0, 1, null);
 
-    if (bytes === 0) return 0;
+    while (true) {
+        try {
+            const bytes = fs.readSync(inFd, buf, 0, 1, null);
 
-    const val = buf[0];
+            if (bytes === 0) return 0;
 
-    // strip newline + carriage return
-    if (val === 10 || val === 13) {
-        return inFunc(); // skip it and read next byte
+            const val = buf[0];
+
+            // strip newline + carriage return
+            if (val === 10 || val === 13) {
+                continue;
+            }
+
+            return val;
+        } catch (e) {
+            if (e.code === "EAGAIN") {
+                continue; // wait until input is available
+            }
+            throw e;
+        }
     }
-
-    return val;
 }
 
 function outFunc(char) {
