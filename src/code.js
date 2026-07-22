@@ -84,7 +84,7 @@ async function run(file, inFunc, outFunc, codeError) {
             
             outFunc(String.fromCharCode(evaluated));
         } else if (line[0] == ",") {
-            shift(inFunc());
+            shift(await Promise.resolve(inFunc()));
         } else if (line[0] == "~") {
             let variable = line.slice(1).trim();
 

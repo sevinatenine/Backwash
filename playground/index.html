@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=ß, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/backwash-lang@latest/src/code.js"></script>
+    <script>
+        function exit(errCode) {
+            console.trace(`Exited: ${errCode}`);
+        }
+
+        function logError(...data) {
+            console.error(...data);
+        }
+
+        function fatal(...data) {
+            logError(`[FATAL] `, ...data);
+            exit(1);
+        }
+
+        function fatalNoExit(...data) {
+            logError(`[FATAL] `, ...data);
+        }
+
+        function codeError(err, lineNumber) {
+            logError(`Error on line ${lineNumber + 1}: ${err}`);
+            exit(1);
+        }
+
+        function inFunc() {
+            // const buf = Buffer.alloc(1);
+
+            // while (true) {
+            //     try {
+            //         const bytes = fs.readSync(inFd, buf, 0, 1, null);
+
+            //         if (bytes === 0) return 0;
+
+            //         const val = buf[0];
+
+            //         // strip newline + carriage return
+            //         if (val === 10 || val === 13) {
+            //             continue;
+            //         }
+
+            //         return val;
+            //     } catch (e) {
+            //         if (e.code === "EAGAIN") {
+            //             continue; // wait until input is available
+            //         }
+            //         throw e;
+            //     }
+            // }
+
+            outFunc("A");
+            return "A";
+        }
+
+        function outFunc(char) {
+            console.log(char);
+        }
+
+        const code = `
+        `;
+
+        async function main() {
+            const runCode = window.BackwashRun;
+            if (!runCode) {
+                return false;
+            }
+
+            runCode(code, inFunc, outFunc, codeError);
+        }
+        
+    </script>
+</body>
+</html>

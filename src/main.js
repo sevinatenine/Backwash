@@ -21,11 +21,6 @@ const possibleOptions = {
 
 const args = process.argv.slice(2);
 let data = {};
-
-function logOutput(...data) {
-
-}
-
 function logError(...data) {
     console.error(...data);
 }
