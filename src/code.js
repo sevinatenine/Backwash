@@ -117,4 +117,5 @@ async function run(file, inFunc, outFunc, codeError) {
     }
 }
 
-exports.run = run;
+if (typeof module !== "undefined") module.exports = { run };
+if (typeof window !== "undefined") window.BackwashRun = run;
