@@ -7,105 +7,280 @@
     <style>
         body {
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
             margin: 0;
+            font-family: monospace;
+            height: 100vh;
         }
 
         #editor {
-            height: 100vh;
-            border: 1px solid black;
-            flex: 7;
+            width: 50%;
         }
 
-        #io {
-            height: 100vh;
-            border: 1px solid black;
-            flex: 3;
+        #content {
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
+            flex: 1;
+            min-height: 0;
         }
 
         #topBar {
+            padding: 10px;
+            box-sizing: border-box;
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            border-bottom: 1px solid black;
+            align-items: center;
+        }
 
+        button, select {
+            border: 1px solid black;
+            cursor: pointer;
+            padding: 5px;
+            font-size: 15px;
+            font-family: monospace;
+        }
+
+        button:hover {
+            background: gray;
         }
 
         #terminal {
             flex: 1;
         }
-    </style>
 
+        .flexSpacer {
+            flex: 1;
+        }
+
+        #overlay {
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        #instructions {
+            border: 1px solid black;
+            background-color: white;
+            max-width: 50%;
+            padding: 10px;
+        }
+
+        code {
+            background-color: rgb(193, 193, 193);
+            padding: 5px;
+        }
+
+        #help {
+            position: fixed;
+            bottom: 5px;
+            right: 5px;
+        }
+
+        #help img {
+            cursor: pointer;
+        }
+    </style>
+    <!--https://cdn.jsdelivr.net/npm/backwash-lang@latest/src/code.js-->
+    <script src="https://cdn.jsdelivr.net/npm/backwash-lang@latest/src/code.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@xterm/addon-fit@0.10.0/lib/addon-fit.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/css/xterm.css" />
     <script src="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/lib/xterm.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/backwash-lang@latest/src/code.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@xterm/addon-fit@0.10.0/lib/addon-fit.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/monaco-editor/min/vs/loader.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/monaco-editor@latest/dev/vs/editor/editor.main.min.css">
 </head>
 <body>
-    <div id="editor"></div>
-    <div id="io">
-        <div id="topBar">
-            <button id="run">Run</button>
-            <button id="stop">Stop</button>
-        </div>
+    <div id="topBar">
+        <button id="run">Run</button>
+        <button id="stop">Stop</button>
+        <button id="clear">Clear</button>
+
+        <input type="checkbox" id="autoclear" name="autoclear" checked="on">
+        <label for="autoclear">Auto-clear?</label>
+
+        <div class="flexSpacer"></div>
+
+        <select id="example" name="example">
+            <option value=""> -- Select an example -- </option>
+            <option value="hello">Hello</option>
+            <option value="hello_stack_loop">Hello (null terminated)</option>
+            <option value="rock_paper_scissors">Rock Paper Scissors</option>
+        </select>
+
+        <button id="loadExample">Load Example</button>
+        <button id="upload">Upload</button>
+        <button id="save">Download</button>
+    </div>
+    <div id="content">
+        <div id="editor"></div>
         <div id="terminal"></div>
     </div>
+
+    <div id="overlay" hidden>
+        <div id="instructions" hidden>
+            <h1>README.md</h1>
+            <h2>How do you use me?</h2>
+            <p>The text editor is on the left, for writing your code and there is an output on the right.</p>
+            <p>You can load example programs by selecting from the dropdown in the top right and clicking "Load Example".</p>
+            <p>You can run your program and stop it, as well as clear the terminal, by clicking the buttons in the top left corner.</p>
+            <p>The "Auto-clear" option clears the terminal before every run of your code.</p>
+            <p>You can also upload and download your code too with the buttons in the upper right corner.</p>
+            <h2>But I don't know the language</h2>
+            <p>You can find detailed syntax documentation on GitHub <a href="https://github.com/sevinatenine/Backwash#syntax" target="_blank">here</a>.</p>
+            <p>But for now, feel free to try out the examples.</p>
+            <h2>I wish there was a CLI option</h2>
+            <p>There is! You can install backwash for the terminal with npm.</p>
+            <p>Just run <code>npm install backwash-lang</code></p>
+            <button onclick="continue_(false);">Continue</button>
+            <button onclick="continue_(true);">Continue + Don't Show Again</button>
+            <button onclick="openGithub();">View GitHub</button>
+        </div>
+    </div>
+
+    <div id="help"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Information_icon.svg/500px-Information_icon.svg.png" width="30px" onclick="showHelp();"></div>
+    
 
     <script>
         const runButton = document.getElementById("run");
         const stopButton = document.getElementById("stop");
+        const clearButton = document.getElementById("clear");
+        const autoClear = document.getElementById("autoclear");
+        const editorElem = document.getElementById("editor");
+        const loadExampleButton = document.getElementById("loadExample");
+        const uploadButton = document.getElementById("upload");
+        const saveButton = document.getElementById("save");
+        const example = document.getElementById("example");
 
         function exit(errCode) {
             console.trace(`Exited: ${errCode}`);
         }
 
         function logError(...data) {
-            console.error(...data);
+            alert(...data);
         }
 
-        function fatal(...data) {
-            logError(`[FATAL] `, ...data);
-            exit(1);
-        }
-
-        function fatalNoExit(...data) {
-            logError(`[FATAL] `, ...data);
-        }
-
-        function codeError(err, lineNumber) {
+        function codeError(err, lineNumber, controller) {
             logError(`Error on line ${lineNumber + 1}: ${err}`);
+            controller.abort();
             exit(1);
         }
 
-        async function inFunc() {
-            // const buf = Buffer.alloc(1);
-
-            // while (true) {
-            //     try {
-            //         const bytes = fs.readSync(inFd, buf, 0, 1, null);
-
-            //         if (bytes === 0) return 0;
-
-            //         const val = buf[0];
-
-            //         // strip newline + carriage return
-            //         if (val === 10 || val === 13) {
-            //             continue;
-            //         }
-
-            //         return val;
-            //     } catch (e) {
-            //         if (e.code === "EAGAIN") {
-            //             continue; // wait until input is available
-            //         }
-            //         throw e;
-            //     }
-            // }
-
-            return new Promise(resolve => setTimeout(resolve, 5000));
+        if (localStorage.dontShowHelp === undefined) {
+            showHelp();
+        } else {
+            document.getElementById("overlay").style.width = "0";
+            document.getElementById("overlay").style.height = "0";
         }
+
+        function showHelp() {
+            document.getElementById("overlay").hidden = false;
+            document.getElementById("instructions").hidden = false;
+            document.getElementById("overlay").style.width = "100vw";
+            document.getElementById("overlay").style.height = "100vh";
+        }
+
+        function continue_(dontShowAgain) {
+            document.getElementById("overlay").hidden = true;
+            document.getElementById("instructions").hidden = true;
+            document.getElementById("overlay").style.width = "0";
+            document.getElementById("overlay").style.height = "0";
+            if (dontShowAgain) {
+                localStorage.dontShowHelp = true;
+            }
+        }
+
+        function openGithub() {
+            var e = document.createElement("a");
+            e.href = "https://github.com/sevinatenine/Backwash";
+            e.target = "_blank";
+            e.click();
+        }
+
+        async function getExample(name) {
+            var response = await fetch(`https://cdn.jsdelivr.net/npm/backwash-lang@latest/examples/${name}.bw`);
+            var text = await response.text();
+
+            return text;
+        }
+
+        // This function and variables was written by AI because im just porting it to the browser so I can demo it
+        let inputBuffer = [];
+        let inputListener = null;
+
+        function inFunc(signal) {
+            if (inputBuffer.length > 0) {
+                return Promise.resolve(inputBuffer.shift());
+            }
+
+            return new Promise(resolve => {
+                let lineBuffer = "";
+
+                const cleanup = () => {
+                    if (inputListener) {
+                        inputListener.dispose();
+                        inputListener = null;
+                    }
+                    if (signal) {
+                        signal.removeEventListener("abort", onAbort);
+                    }
+                };
+
+                const onAbort = () => {
+                    cleanup();
+                    resolve(0); // interpreter will bail on next loop check anyway
+                };
+
+                if (signal) {
+                    if (signal.aborted) {
+                        // Already aborted before we even started waiting
+                        onAbort();
+                        return;
+                    }
+                    signal.addEventListener("abort", onAbort);
+                }
+
+                inputListener = term.onData(data => {
+                    const code = data.charCodeAt(0);
+
+                    if (code === 127 || code === 8) {
+                        if (lineBuffer.length > 0) {
+                            lineBuffer = lineBuffer.slice(0, -1);
+                            term.write("\b \b");
+                        }
+                        return;
+                    }
+
+                    if (code === 13 || code === 10) {
+                        term.write("\r\n");
+                        cleanup();
+
+                        inputBuffer = lineBuffer.split("").map(c => c.charCodeAt(0));
+
+                        if (inputBuffer.length === 0) {
+                            resolve(inFunc(signal));
+                        } else {
+                            resolve(inputBuffer.shift());
+                        }
+                        return;
+                    }
+
+                    lineBuffer += data;
+                    term.write(data);
+                });
+            });
+        }
+
+        // End of AI
 
         function outFunc(char) {
-            console.log(char);
+            term.write(char);
         }
 
         const term = new Terminal({ convertEol: true, cursorBlink: true });
@@ -115,24 +290,111 @@
         fitAddon.fit();
         window.addEventListener("resize", () => fitAddon.fit());
 
-        const code = `
-        . 72
-        . 101
-        . 108
-        . 108
-        . 111
-        . 44
-        . 32
-        . 87
-        . 111
-        . 114
-        . 108
-        . 100
-        . 33
-        . 10
-        `;
+        var code = "";
 
         var controller;
+
+        require.config({
+            paths: { vs: "https://cdn.jsdelivr.net/npm/monaco-editor/min/vs" }
+        });
+
+        window.MonacoEnvironment = {
+            getWorkerUrl: function(workerId, label) {
+                return `data:text/javascript;charset=utf-8,${encodeURIComponent(`
+                self.MonacoEnvironment = {
+                baseUrl: 'https://cdn.jsdelivr.net/npm/monaco-editor/min/'
+                };
+                importScripts('https://cdn.jsdelivr.net/npm/monaco-editor/min/vs/base/worker/workerMain.js');`)}`;
+            }
+        };
+
+        // Monaco init
+        require(["vs/editor/editor.main"], function() {
+            createEditor(editorElem);
+        });
+
+        async function uploadWithFileSystemAPI(editor) {
+            try {
+                // Open the native file picker
+                const [fileHandle] = await window.showOpenFilePicker({
+                types: [{
+                    description: 'Backwash'
+                }]
+                });
+
+                const file = await fileHandle.getFile();
+                var code = await file.text();
+
+                editor.setValue(code);
+                
+            } catch (err) {
+                // User cancelled or browser rejected
+                console.log('File selection aborted or failed', err);
+            }
+        }
+
+        function downloadGeneratedFile(content, fileName, contentType) {
+            const blob = new Blob([content], { type: contentType });
+            
+            const blobUrl = URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = fileName;
+            
+            document.body.appendChild(link);
+            link.click();
+            
+            document.body.removeChild(link);
+            URL.revokeObjectURL(blobUrl);
+        }
+
+
+        function createEditor(editorContainer) {
+            let editor = monaco.editor.create(editorContainer, {
+                value: "",
+                language: "",
+                minimap: { enabled: false },
+                automaticLayout: true,
+                contextmenu: true,
+                fontSize: 12,
+                scrollbar: {
+                    useShadows: false,
+                    vertical: "visible",
+                    horizontal: "visible",
+                    horizontalScrollbarSize: 12,
+                    verticalScrollbarSize: 12
+                },
+                padding: {
+                    top: 16,
+                    bottom: 16
+                },
+            });
+            
+            editor.onDidChangeModelContent(() => {
+                code = editor.getValue();
+            });
+
+            uploadButton.addEventListener("click", async function () {
+                await uploadWithFileSystemAPI(editor);
+            })
+
+            saveButton.addEventListener("click", async function() {
+                downloadGeneratedFile(editor.getValue(), prompt("What would you like to call your file?"), "application/backwash");
+            })
+
+            loadExampleButton.addEventListener("click", async function() {
+                var exampleToLoad = example.value;
+
+                if (exampleToLoad.length == 0) {
+                    return;
+                }
+
+                var code = await getExample(exampleToLoad);
+
+                editor.setValue(code)
+            })
+        }
 
         async function main() {
             const runCode = window.BackwashRun;
@@ -142,16 +404,33 @@
             }
 
             runButton.addEventListener("click", async function() {
+                if (controller) {
+                    controller.abort();
+                }
+
                 controller = new AbortController();
 
-                await runCode(code, inFunc, outFunc, codeError, controller.signal);
-                console.log("Finished");
+                if (autoClear.checked) {
+                    term.clear();
+                }
+
+                inputBuffer = [];
+
+                term.focus();
+
+                await runCode(code, () => inFunc(controller.signal), outFunc, (err, lineNumber) => codeError(err, lineNumber, controller), controller.signal);
+
+                term.write("\n\n** Finished **\n\n")
             });
 
             stopButton.addEventListener("click", async function() {
                 if (controller) {
                     controller.abort();
                 }
+            })
+
+            clearButton.addEventListener("click", function() {
+                term.clear();
             })
         }
 
