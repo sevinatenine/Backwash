@@ -1,0 +1,24 @@
+{
+  "name": "backwash-lang",
+  "version": "1.0.0",
+  "description": "An esoteric language where every keyword and variable is one character.",
+  "main": "src/main.js",
+  "directories": {
+    "example": "examples"
+  },
+  "bin": {
+    "backwash": "src/main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sevinatenine/Backwash.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/sevinatenine/Backwash/issues"
+  },
+  "homepage": "https://github.com/sevinatenine/Backwash#readme"
+}

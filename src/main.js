@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const fs = require("fs");
 const code = require("./code");
 const { exit } = require("process");
@@ -39,7 +41,7 @@ function fatalNoExit(...data) {
  
 function showHelp() {
     logError("Usage:");
-    logError(`  bachwash.js <filename> [options]`);
+    logError(`  npx backwash-lang <filename> [options]`);
     logError("Options:");
 
     for (var i of Object.keys(possibleOptions)) {
