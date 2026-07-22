@@ -2,14 +2,58 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=ß, initial-scale=1.0">
     <title>Document</title>
-</head>
-<body>
 
+    <style>
+        body {
+            display: flex;
+            flex-direction: row;
+            margin: 0;
+        }
+
+        #editor {
+            height: 100vh;
+            border: 1px solid black;
+            flex: 7;
+        }
+
+        #io {
+            height: 100vh;
+            border: 1px solid black;
+            flex: 3;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #topBar {
+
+        }
+
+        #terminal {
+            flex: 1;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/css/xterm.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/lib/xterm.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/backwash-lang@latest/src/code.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@xterm/addon-fit@0.10.0/lib/addon-fit.js"></script>
+</head>
+<body>
+    <div id="editor"></div>
+    <div id="io">
+        <div id="topBar">
+            <button id="run">Run</button>
+            <button id="stop">Stop</button>
+        </div>
+        <div id="terminal"></div>
+    </div>
+
     <script>
+        const runButton = document.getElementById("run");
+        const stopButton = document.getElementById("stop");
+
         function exit(errCode) {
             console.trace(`Exited: ${errCode}`);
         }
@@ -32,7 +76,7 @@
             exit(1);
         }
 
-        function inFunc() {
+        async function inFunc() {
             // const buf = Buffer.alloc(1);
 
             // while (true) {
@@ -57,25 +101,61 @@
             //     }
             // }
 
-            outFunc("A");
-            return "A";
+            return new Promise(resolve => setTimeout(resolve, 5000));
         }
 
         function outFunc(char) {
             console.log(char);
         }
 
+        const term = new Terminal({ convertEol: true, cursorBlink: true });
+        const fitAddon = new FitAddon.FitAddon();
+        term.loadAddon(fitAddon);
+        term.open(document.getElementById("terminal"));
+        fitAddon.fit();
+        window.addEventListener("resize", () => fitAddon.fit());
+
         const code = `
+        . 72
+        . 101
+        . 108
+        . 108
+        . 111
+        . 44
+        . 32
+        . 87
+        . 111
+        . 114
+        . 108
+        . 100
+        . 33
+        . 10
         `;
+
+        var controller;
 
         async function main() {
             const runCode = window.BackwashRun;
             if (!runCode) {
+                console.log("BackwashRun not found!");
                 return false;
             }
 
-            runCode(code, inFunc, outFunc, codeError);
+            runButton.addEventListener("click", async function() {
+                controller = new AbortController();
+
+                await runCode(code, inFunc, outFunc, codeError, controller.signal);
+                console.log("Finished");
+            });
+
+            stopButton.addEventListener("click", async function() {
+                if (controller) {
+                    controller.abort();
+                }
+            })
         }
+
+        main();
         
     </script>
 </body>

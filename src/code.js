@@ -1,4 +1,4 @@
-async function run(file, inFunc, outFunc, codeError) {
+async function run(file, inFunc, outFunc, codeError, signal) {
     var lines = file.split("\n").map(a => a.trim());
 
     var variables = [0, 0, 0, 0];
@@ -44,6 +44,10 @@ async function run(file, inFunc, outFunc, codeError) {
     
     for (var pc = 0; pc < lines.length; pc++) {
         var line = lines[pc];
+
+        if (signal?.aborted) {
+            return;
+        }
 
         if (line[0] == "=") {
             var expr = line.slice(1);

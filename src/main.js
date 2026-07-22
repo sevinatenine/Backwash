@@ -156,4 +156,6 @@ function outFunc(char) {
     }
 }
 
-code.run(file, inFunc, outFunc, codeError);
+var controller = new AbortController()
+
+code.run(file, inFunc, outFunc, codeError, controller.signal);
