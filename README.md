@@ -1,19 +1,26 @@
 # Backwash
 An esoteric language where every keyword and variable is one character.
 
+Install with
+```bash
+npm install backwash-lang
+```
+
 Run with
 ```bash
-node src/main.js <filename.bw>
+npx backwash-lang <filename.bw>
 ```
 
 Some examples are provided in /examples.
 
 Run rock paper scissors from the project root directory with
 ```bash
-node src/main.js examples/rock_paper_scissors.bw
+npx backwash-lang examples/rock_paper_scissors.bw
 ```
 
 > Fun fact: This project was created with no third-party node modules.
+
+**NOTE**: This project was also developed by @Cesium72 (on GitHub).
 
 ## Syntax
 
@@ -45,7 +52,7 @@ It is used like `,` (i know - sooo complicated).
 
 Unlike a traditional stack, the Backwash stack does not let you read from a certain position in stack. You can only push and pop it.
 However, you can push a variable or number, with `~`. I.E. `~ ^` or `~ 65`.
-When you pop from it, the value is shifted into `$`. I.E. `\``.
+When you pop from it, the value is shifted into `$`. I.E. \`.
 
 > NOTE: Popping from an empty stack will result in 0 being popped.
 

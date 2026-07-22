@@ -45,8 +45,6 @@ async function run(file, inFunc, outFunc, codeError) {
     for (var pc = 0; pc < lines.length; pc++) {
         var line = lines[pc];
 
-        // console.log(pc, line);
-
         if (line[0] == "=") {
             var expr = line.slice(1);
             var args = expr.split(/[+\-><&]/).filter(e => e.length > 0);
@@ -90,16 +88,12 @@ async function run(file, inFunc, outFunc, codeError) {
         } else if (line[0] == "~") {
             let variable = line.slice(1).trim();
 
-            // console.log("Var", variable);
-
             if(variable.length == 0) {
                 codeError("A variable is required for pushing.", pc)
             } else stack.push(parse(variable));
-            //console.log("Pushed", stack);
         } else if (line[0] == "`") {
             let e = stack.pop();
             shift(e ?? 0);
-            //console.log("Popped", e, stack);
         } else if (line[0] == ":") {
             if (variables[0] === 0) pc++;            
         } else if (line[0] == "|") {
@@ -110,8 +104,6 @@ async function run(file, inFunc, outFunc, codeError) {
 
             if(!(lbl in labels)) codeError("No such label", pc);
 
-            //console.log(labels[lbl]);
-
             pc = labels[lbl];
         }
 
@@ -119,12 +111,8 @@ async function run(file, inFunc, outFunc, codeError) {
         //     console.log(stack, variables);
         // }
 
-        // console.log(line.trim().slice(0, 5));
-
         variables = variables.map(roll);
         stack = stack.map(roll);
-
-        //console.log(variables);
 
     }
 }
