@@ -36,7 +36,7 @@ Fore example, you could do `= $` which would shift in the contents of the `$` va
 ### Input and Output
 
 To print a character in Backwash, you use the `.` character. You can print the contents of a variable or a number (an inline constant).
-For example, you could `. %` which would print the contents of `% ` or you could `. 65` which would print `A`.
+For example, you could `. %` which would print the contents of `%` or you could `. 65` which would print `A`.
 
 Reading input is done witht the `,` operator. This character reads a byte from STDIN, or wherever you choose with the arguments, and shifts that byte into the `$`.
 It is used like `,` (i know - sooo complicated). 
