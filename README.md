@@ -11,6 +11,8 @@ Run with
 npx backwash-lang <filename.bw>
 ```
 
+The online interpreter is static HTML and JS that can run the language in the web. It is available in /playground.
+
 Some examples are provided in /examples.
 
 Run rock paper scissors from the project root directory with
@@ -18,7 +20,7 @@ Run rock paper scissors from the project root directory with
 npx backwash-lang examples/rock_paper_scissors.bw
 ```
 
-> Fun fact: This project was created with no third-party node modules.
+> Fun fact: This project was created with no third-party node modules (except in the playground/online interpreter - where Monaco editor and Xterm.js were used for I/O).
 
 **NOTE**: This project was also developed by @Cesium72 (on GitHub).
 

@@ -127,17 +127,17 @@
         <div id="instructions" hidden>
             <h1>README.md</h1>
             <h2>How do you use me?</h2>
-            <p>The text editor is on the left, for writing your code and there is an output on the right.</p>
+            <p>The text editor is in the left for writing your code and there is an output in the right.</p>
             <p>You can load example programs by selecting from the dropdown in the top right and clicking "Load Example".</p>
             <p>You can run your program and stop it, as well as clear the terminal, by clicking the buttons in the top left corner.</p>
             <p>The "Auto-clear" option clears the terminal before every run of your code.</p>
-            <p>You can also upload and download your code too with the buttons in the upper right corner.</p>
+            <p>You can also upload and download your code with the buttons in the upper right corner.</p>
             <h2>But I don't know the language</h2>
             <p>You can find detailed syntax documentation on GitHub <a href="https://github.com/sevinatenine/Backwash#syntax" target="_blank">here</a>.</p>
             <p>But for now, feel free to try out the examples.</p>
             <h2>I wish there was a CLI option</h2>
             <p>There is! You can install backwash for the terminal with npm.</p>
-            <p>Just run <code>npm install backwash-lang</code></p>
+            <p>Just run <code>npm install backwash-lang</code>.</p>
             <button onclick="continue_(false);">Continue</button>
             <button onclick="continue_(true);">Continue + Don't Show Again</button>
             <button onclick="openGithub();">View GitHub</button>
@@ -308,14 +308,12 @@
             }
         };
 
-        // Monaco init
         require(["vs/editor/editor.main"], function() {
             createEditor(editorElem);
         });
 
         async function uploadWithFileSystemAPI(editor) {
             try {
-                // Open the native file picker
                 const [fileHandle] = await window.showOpenFilePicker({
                 types: [{
                     description: 'Backwash'
@@ -328,7 +326,6 @@
                 editor.setValue(code);
                 
             } catch (err) {
-                // User cancelled or browser rejected
                 console.log('File selection aborted or failed', err);
             }
         }
