@@ -31,11 +31,10 @@ async function run(file, inFunc, outFunc, codeError) {
     for (var pc = 0; pc < lines.length; pc++) {
         if (lines[pc][0] == "!") {
             if (lines[pc].split("!").filter(e => e).length === 0) {
-                if (labels[lines[pc].trim()]) {
+                if (labels[lines[pc].trim()] !== undefined) {
                     codeError("Label already exists", pc);
                 } else {
-                    //console.log(lines[pc].trim(), pc);
-                    labels[lines[pc].trim()] = pc;   
+                    labels[lines[pc].trim()] = pc;
                 }
             } else {
                 codeError("Labels can only be !'s.", pc);
@@ -50,15 +49,15 @@ async function run(file, inFunc, outFunc, codeError) {
 
         if (line[0] == "=") {
             var expr = line.slice(1);
-            var args = expr.split(/[+\-><&]/);
+            var args = expr.split(/[+\-><&]/).filter(e => e.length > 0);
             
             if(args.length > 2 || !args.length) {
                 codeError("Expected = <var|const> [<operator> <var|const>]. I.E. = 8 + %, or ^", pc);
             }
             
-            if (args.length == 1) { // Single ->     = 8
+            if (args.length == 1) {
                 shift(parse(args[0].trim()));
-            } else { // Operator ->     = $ + 7
+            } else {
                 var op = expr.slice(args[0].length, args[0].length+1);
                 
                 args = args.map(e => e.trim());
@@ -68,7 +67,7 @@ async function run(file, inFunc, outFunc, codeError) {
                 var evaluated = 
                 op == "+" ? args[0] + args[1] :
                 op == "-" ? args[0] - args[1] :
-                op == "&" ? 1 - Math.sign(args[0] * args[1]) :
+                op == "&" ? ~(args[0] & args[1]) & 0xFF :
                 op == "<" ? Number(args[0] < args[1]) :
                 op == ">" ? Number(args[0] > args[1]) : 
                 (() => {codeError("Unknown op: " + op); })();
@@ -114,9 +113,11 @@ async function run(file, inFunc, outFunc, codeError) {
             //console.log(labels[lbl]);
 
             pc = labels[lbl];
-        } else if (line.trim().slice(0, 5) == "debug") {
-            console.log(stack, variables);
         }
+
+        // else if (line.trim().slice(0, 5) == "debug") {
+        //     console.log(stack, variables);
+        // }
 
         // console.log(line.trim().slice(0, 5));
 
