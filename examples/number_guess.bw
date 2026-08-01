@@ -1,0 +1,264 @@
+# Generate random number by moduloing | output (0 - 255)
+
+|
+!
+= $ > 99
+# Skip if false
+:
+?!!
+
+?!!!
+
+!!
+
+= % - 100
+
+?!
+
+!!!
+
+# Push random number to stack
+~ %
+
+# Intro message
+
+. 71
+. 117
+. 101
+. 115
+. 115
+. 32
+. 97
+. 32
+. 110
+. 117
+. 109
+. 98
+. 101
+. 114
+. 32
+. 48
+. 45
+. 57
+. 57
+. 33
+. 10
+. 78
+. 79
+. 84
+. 69
+. 58
+. 32
+. 89
+. 111
+. 117
+. 32
+. 109
+. 117
+. 115
+. 116
+. 32
+. 112
+. 97
+. 100
+. 32
+. 121
+. 111
+. 117
+. 114
+. 32
+. 110
+. 117
+. 109
+. 98
+. 101
+. 114
+. 32
+. 119
+. 105
+. 116
+. 104
+. 32
+. 97
+. 32
+. 122
+. 101
+. 114
+. 111
+. 32
+. 105
+. 102
+. 32
+. 105
+. 116
+. 32
+. 105
+. 115
+. 32
+. 115
+. 105
+. 110
+. 103
+. 108
+. 101
+. 32
+. 100
+. 105
+. 103
+. 105
+. 116
+. 46
+. 10
+
+# Label for getting a 2 digit input and converting it into a number
+!!!!
+
+# > 
+
+. 62
+. 32
+
+# Get first char
+,
+
+= $ - 48
+
+# Get second char
+,
+
+= $ - 48
+
+# First digit in ^
+# Second digit in $
+
+# Start multiply by 10:
+
+# Perform add #1
+= $ + ^
+
+# Refresh
+= @
+
+# Perform add #2
+= $ + %
+
+# Perform add #3
+= $ + %
+
+# Perform add #4
+= $ + ^
+
+# Refresh
+= @
+
+# Perform add #5
+= $ + %
+
+# Perform add #6
+= $ + %
+
+# Perform add #7
+= $ + ^
+
+# Refresh
+= @
+
+# Perform add #8
+= $ + %
+
+# Perform add #9
+= $ + %
+
+# Perform add #10
+= $ + ^
+
+# End multiply by 10 - final input is in $
+
+`
+~ $
+
+# Check if input > number
+= % > $
+# $ has comparison, input is in ^, number is in %
+
+# If true, go to !!!!!, else go to !!!!!!
+:
+?!!!!!
+?!!!!!!
+
+# input > number
+!!!!!
+
+. 71
+. 117
+. 101
+. 115
+. 115
+. 32
+. 108
+. 111
+. 119
+. 101
+. 114
+. 33
+. 10
+
+?!!!!
+
+# input <= number
+!!!!!!
+
+= ^ < %
+:
+?!!!!!!!
+
+# The number is equal!
+?!!!!!!!!!!
+
+# The number is lower.
+!!!!!!!
+
+. 71
+. 117
+. 101
+. 115
+. 115
+. 32
+. 104
+. 105
+. 103
+. 104
+. 101
+. 114
+. 33
+. 10
+
+?!!!!
+
+# The number is equal!
+!!!!!!!!!!
+
+. 89
+. 111
+. 117
+. 32
+. 103
+. 117
+. 101
+. 115
+. 115
+. 101
+. 100
+. 32
+. 116
+. 104
+. 101
+. 32
+. 110
+. 117
+. 109
+. 98
+. 101
+. 114
+. 33
+. 10
